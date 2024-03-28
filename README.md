@@ -12,5 +12,5 @@ go get -u github.com/p-nerd/hof
 
 -   [x] `ForEach`
 -   [x] `Map`
--   [ ] `Filter`
+-   [x] `Filter`
 -   [ ] `Reduce`

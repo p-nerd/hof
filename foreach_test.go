@@ -19,7 +19,7 @@ func TestForEachNilSlice(t *testing.T) {
 	}
 }
 
-func TestForEachNilFunction(t *testing.T) {
+func TestForEachNilCallback(t *testing.T) {
 	err := hof.ForEach([]int{1, 2, 3}, nil)
 	if err == nil {
 		t.Error("Expected error for nil function, got nil")
