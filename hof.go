@@ -114,3 +114,42 @@ func Filter[T any](slice []T, callback func(int, T, []T) bool) ([]T, error) {
 	}
 	return filteredSlice, nil
 }
+
+// Reduce applies a reducer function to each element in the input slice
+// to accumulate a single result.
+//
+// The reducer function, reducer, should accept three parameters:
+//   - The index of the element in the slice.
+//   - The current accumulator value.
+//   - The current element itself.
+//
+// The reducer function should return the updated accumulator value.
+//
+// Example:
+//
+//	// Sum up a slice of integers
+//	sum, err := Reduce([]int{1, 2, 3, 4, 5}, func(index int, acc int, val int) int {
+//	    return acc + val
+//	}, 0)
+//
+// Parameters:
+//   - slice: The input slice to be reduced.
+//   - reducer: The reducer function to be applied to each element.
+//   - initial: The initial value of the accumulator.
+//
+// Returns:
+//   - U: The final result after reducing the input slice.
+//   - error: An error if the input slice or reducer function is nil.
+func Reduce[T any, U any](slice []T, reducer func(int, U, T) U, initial U) (U, error) {
+	if slice == nil {
+		return initial, errors.New("slice is nil")
+	}
+	if reducer == nil {
+		return initial, errors.New("reducer is nil")
+	}
+	accumulator := initial
+	for index, item := range slice {
+		accumulator = reducer(index, accumulator, item)
+	}
+	return accumulator, nil
+}
