@@ -2,7 +2,9 @@
 
 Higher Order Functions Package for Gopher's
 
-## Install the package
+Docs Link: https://pkg.go.dev/github.com/p-nerd/hof
+
+## Get the package
 
 ```sh
 go get -u github.com/p-nerd/hof
