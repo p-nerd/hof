@@ -1,8 +1,6 @@
 // This package provides higher-order functions for working with slices.
 package hof
 
-import "errors"
-
 // ForEach applies a callback function to each element in the input slice.
 //
 // The callback function, callback, should accept three parameters:
@@ -15,27 +13,20 @@ import "errors"
 // Example:
 //
 //	// Print each element in a slice of strings
-//	err := ForEach([]string{"apple", "banana", "cherry"}, func(i int, item string, slice []string) {
-//	    fmt.Println(i, item)
+//	err := ForEach([]string{"apple", "banana", "cherry"}, func(index int, item string, slice []string) {
+//	    fmt.Println(index, item)
 //	})
 //
 // Parameters:
 //   - slice: The input slice to iterate over.
 //   - callback: The callback function to be applied to each element.
-//
-// Returns:
-//   - error: An error if the input slice or callback function is nil.
-func ForEach[T any](slice []T, callback func(int, T, []T)) error {
-	if slice == nil {
-		return errors.New("slice is nil")
-	}
-	if callback == nil {
-		return errors.New("callback is nil")
+func ForEach[T any](slice []T, callback func(int, T, []T)) {
+	if slice == nil || callback == nil {
+		return
 	}
 	for index, item := range slice {
 		callback(index, item, slice)
 	}
-	return nil
 }
 
 // Map applies a mapping function to each element in the input slice
@@ -52,8 +43,8 @@ func ForEach[T any](slice []T, callback func(int, T, []T)) error {
 // Example:
 //
 //	// Double each element in a slice of integers
-//	mappedSlice, err := Map([]int{1, 2, 3, 4, 5}, func(i int, x int, slice []int) int {
-//	    return x * 2
+//	mappedSlice, err := Map([]int{1, 2, 3, 4, 5}, func(index int, item int, slice []int) int {
+//	    return item * 2
 //	})
 //
 // Parameters:
@@ -62,19 +53,15 @@ func ForEach[T any](slice []T, callback func(int, T, []T)) error {
 //
 // Returns:
 //   - []U: A new slice containing the results of applying the mapping function to each element.
-//   - error: An error if the input slice or callback function is nil.
-func Map[T, U any](slice []T, callback func(int, T, []T) U) ([]U, error) {
-	if slice == nil {
-		return nil, errors.New("slice is nil")
-	}
-	if callback == nil {
-		return nil, errors.New("callback is nil")
+func Map[T, U any](slice []T, callback func(int, T, []T) U) []U {
+	if slice == nil || callback == nil {
+		return []U{}
 	}
 	mapped := make([]U, len(slice))
 	for index, item := range slice {
 		mapped[index] = callback(index, item, slice)
 	}
-	return mapped, nil
+	return mapped
 }
 
 // Filter applies a filtering function to each element in the input slice
@@ -88,8 +75,8 @@ func Map[T, U any](slice []T, callback func(int, T, []T) U) ([]U, error) {
 // Example:
 //
 //	// Filter out even numbers from a slice of integers
-//	filteredSlice, err := Filter([]int{1, 2, 3, 4, 5}, func(x int) bool {
-//	    return x%2 != 0
+//	filteredSlice, err := Filter([]int{1, 2, 3, 4, 5}, func(index int, item int, slice []int) bool {
+//	    return item%2 != 0
 //	})
 //
 // Parameters:
@@ -98,13 +85,9 @@ func Map[T, U any](slice []T, callback func(int, T, []T) U) ([]U, error) {
 //
 // Returns:
 //   - []T: A new slice containing only the elements that satisfy the filtering condition.
-//   - error: An error if the input slice or callback function is nil.
-func Filter[T any](slice []T, callback func(int, T, []T) bool) ([]T, error) {
-	if slice == nil {
-		return nil, errors.New("slice is nil")
-	}
-	if callback == nil {
-		return nil, errors.New("callback is nil")
+func Filter[T any](slice []T, callback func(int, T, []T) bool) []T {
+	if slice == nil || callback == nil {
+		return []T{}
 	}
 	filteredSlice := []T{}
 	for index, item := range slice {
@@ -112,7 +95,7 @@ func Filter[T any](slice []T, callback func(int, T, []T) bool) ([]T, error) {
 			filteredSlice = append(filteredSlice, item)
 		}
 	}
-	return filteredSlice, nil
+	return filteredSlice
 }
 
 // Reduce applies a reducer function to each element in the input slice
@@ -139,17 +122,13 @@ func Filter[T any](slice []T, callback func(int, T, []T) bool) ([]T, error) {
 //
 // Returns:
 //   - U: The final result after reducing the input slice.
-//   - error: An error if the input slice or reducer function is nil.
-func Reduce[T any, U any](slice []T, reducer func(int, U, T) U, initial U) (U, error) {
-	if slice == nil {
-		return initial, errors.New("slice is nil")
-	}
-	if reducer == nil {
-		return initial, errors.New("reducer is nil")
+func Reduce[T any, U any](slice []T, reducer func(int, U, T) U, initial U) U {
+	if slice == nil || reducer == nil {
+		return initial
 	}
 	accumulator := initial
 	for index, item := range slice {
 		accumulator = reducer(index, accumulator, item)
 	}
-	return accumulator, nil
+	return accumulator
 }

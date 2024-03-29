@@ -9,18 +9,13 @@ import (
 // Unhappy case
 
 func TestReduceNilSlice(t *testing.T) {
-	result, err := hof.Reduce(
+	result := hof.Reduce(
 		nil,
 		func(_ int, acc int, val int) int {
 			return acc + val
 		},
 		0,
 	)
-	if err == nil {
-		t.Error("Expected error for nil slice, got nil")
-	} else if err.Error() != "slice is nil" {
-		t.Errorf("Expected error message 'slice is nil', got '%s'", err.Error())
-	}
 	expectedInitial := 0
 	if result != expectedInitial {
 		t.Errorf(
@@ -33,12 +28,7 @@ func TestReduceNilSlice(t *testing.T) {
 
 func TestReduceNilReducer(t *testing.T) {
 	intSlice := []int{1, 2, 3, 4, 5}
-	result, err := hof.Reduce(intSlice, nil, 0)
-	if err == nil {
-		t.Error("Expected error for nil reducer function, got nil")
-	} else if err.Error() != "reducer is nil" {
-		t.Errorf("Expected error message 'reducer is nil', got '%s'", err.Error())
-	}
+	result := hof.Reduce(intSlice, nil, 0)
 	expectedInitial := 0
 	if result != expectedInitial {
 		t.Errorf(
@@ -53,16 +43,13 @@ func TestReduceNilReducer(t *testing.T) {
 
 func TestReduceSumInts(t *testing.T) {
 	intSlice := []int{1, 2, 3, 4, 5}
-	result, err := hof.Reduce(
+	result := hof.Reduce(
 		intSlice,
 		func(_ int, acc int, val int) int {
 			return acc + val
 		},
 		0,
 	)
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
 	expectedSum := 15
 	if result != expectedSum {
 		t.Errorf(
@@ -75,16 +62,13 @@ func TestReduceSumInts(t *testing.T) {
 
 func TestReduceConcatStrings(t *testing.T) {
 	strSlice := []string{"Hello", " ", "World"}
-	result, err := hof.Reduce(
+	result := hof.Reduce(
 		strSlice,
 		func(_ int, acc string, val string) string {
 			return acc + val
 		},
 		"",
 	)
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
 	expectedConcat := "Hello World"
 	if result != expectedConcat {
 		t.Errorf(
