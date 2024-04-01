@@ -141,3 +141,124 @@ func testCaseMap[T, U any](
 		t.Errorf("Testing %v: expected %v, got %v", name, expected, result)
 	}
 }
+
+func TestFilter(t *testing.T) {
+	testCases := []struct {
+		name          string
+		inputSlice    []int
+		filterFunc    func(int, int, []int) bool
+		expectedSlice []int
+	}{
+		{
+			name:          "Nil slice",
+			inputSlice:    nil,
+			filterFunc:    func(_ int, item int, _ []int) bool { return true },
+			expectedSlice: []int{},
+		},
+		{
+			name:          "Nil callback",
+			inputSlice:    []int{1, 2, 3, 4, 5},
+			filterFunc:    nil,
+			expectedSlice: []int{},
+		},
+		{
+			name:          "Filter even numbers",
+			inputSlice:    []int{1, 2, 3, 4, 5},
+			filterFunc:    func(_ int, item int, _ []int) bool { return item%2 == 0 },
+			expectedSlice: []int{2, 4},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			filteredSlice := hof.Filter(tc.inputSlice, tc.filterFunc)
+			if !reflect.DeepEqual(filteredSlice, tc.expectedSlice) {
+				t.Errorf(
+					"Filtered slice does not match the expected result. Expected: %v, Got: %v",
+					tc.expectedSlice,
+					filteredSlice,
+				)
+			}
+		})
+	}
+}
+
+func TestReduce(t *testing.T) {
+	tt := []struct {
+		name string
+		test func(*testing.T, string)
+	}{
+		{
+			"nil slice",
+			func(t *testing.T, name string) {
+				testCaseReduce(
+					t,
+					name,
+					nil,
+					func(int, int, int) int { return 0 },
+					0,
+					0,
+				)
+			},
+		},
+		{
+			"nil reducer",
+			func(t *testing.T, name string) {
+				testCaseReduce(
+					t,
+					name,
+					[]int{1, 2, 3, 4, 5},
+					nil,
+					0,
+					0,
+				)
+			},
+		},
+		{
+			"sum integers",
+			func(t *testing.T, name string) {
+				testCaseReduce(
+					t,
+					name,
+					[]int{1, 2, 3, 4, 5},
+					func(_ int, acc int, val int) int { return acc + val },
+					0,
+					15,
+				)
+			},
+		},
+		{
+			"concatenate strings",
+			func(t *testing.T, name string) {
+				testCaseReduce(
+					t,
+					name,
+					[]string{"Hello", " ", "World"},
+					func(_ int, acc string, val string) string { return acc + val },
+					"",
+					"Hello World",
+				)
+			},
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.test(t, tc.name)
+		})
+	}
+}
+
+func testCaseReduce[T, U any](
+	t *testing.T,
+	name string,
+	input []T,
+	reducer func(int, U, T) U,
+	initialValue U,
+	expectedResult U,
+) {
+	result := hof.Reduce(input, reducer, initialValue)
+	if !reflect.DeepEqual(result, expectedResult) {
+		t.Errorf("Testing %v: expected %v, got %v", name, expectedResult, result)
+	}
+}

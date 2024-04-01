@@ -37,3 +37,11 @@ func ExampleFilter() {
 	fmt.Println(filteredSlice)
 	// Output: [1 3 5]
 }
+
+func ExampleReduce() {
+	sum := hof.Reduce([]int{1, 2, 3, 4, 5}, func(index int, acc int, val int) int {
+		return acc + val
+	}, 0)
+	fmt.Println(sum)
+	// Output: 15
+}
